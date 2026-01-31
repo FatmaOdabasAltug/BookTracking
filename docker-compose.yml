@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: booktracking_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ab6!oQaPP3!
+      POSTGRES_DB: BookTrackingDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
