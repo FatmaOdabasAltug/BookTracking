@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookTracking.Domain", "BookTracking.Domain\BookTracking.Domain.csproj", "{AC92B552-664E-4702-AD62-7A4F56021804}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookTracking.Application", "BookTracking.Application\BookTracking.Application.csproj", "{4E18B438-CBD6-4252-A8BE-145D4CAE444A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookTracking.Infrastructure", "BookTracking.Infrastructure\BookTracking.Infrastructure.csproj", "{320F29F2-FF8C-43D8-92AB-DF82F12B548F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookTracking.API", "BookTracking.API\BookTracking.API.csproj", "{DE9C704A-66AD-4F47-BCAD-203512280DDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC92B552-664E-4702-AD62-7A4F56021804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC92B552-664E-4702-AD62-7A4F56021804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC92B552-664E-4702-AD62-7A4F56021804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC92B552-664E-4702-AD62-7A4F56021804}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E18B438-CBD6-4252-A8BE-145D4CAE444A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E18B438-CBD6-4252-A8BE-145D4CAE444A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E18B438-CBD6-4252-A8BE-145D4CAE444A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E18B438-CBD6-4252-A8BE-145D4CAE444A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{320F29F2-FF8C-43D8-92AB-DF82F12B548F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{320F29F2-FF8C-43D8-92AB-DF82F12B548F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{320F29F2-FF8C-43D8-92AB-DF82F12B548F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{320F29F2-FF8C-43D8-92AB-DF82F12B548F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE9C704A-66AD-4F47-BCAD-203512280DDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE9C704A-66AD-4F47-BCAD-203512280DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE9C704A-66AD-4F47-BCAD-203512280DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE9C704A-66AD-4F47-BCAD-203512280DDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
