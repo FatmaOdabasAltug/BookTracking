@@ -80,6 +80,8 @@ public class BookTrackingDbContext : DbContext
                 .HasMaxLength(4000);
             entity.Property(e => e.Description)
                 .HasMaxLength(500);
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });

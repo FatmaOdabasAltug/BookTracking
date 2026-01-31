@@ -3,6 +3,7 @@ using System;
 using BookTracking.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookTracking.Infrastructure.Migrations
 {
     [DbContext(typeof(BookTrackingDbContext))]
-    partial class BookTrackingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260131162633_BaseEntityUpdated")]
+    partial class BaseEntityUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +67,7 @@ namespace BookTracking.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<string>("NewValue")
                         .HasMaxLength(4000)
