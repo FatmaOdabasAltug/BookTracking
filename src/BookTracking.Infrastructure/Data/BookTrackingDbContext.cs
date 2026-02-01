@@ -33,6 +33,12 @@ public class BookTrackingDbContext : DbContext
                 .HasDefaultValue(true);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.Isbn)
+                .IsRequired()
+                .HasMaxLength(13)
+                .IsFixedLength();
+            entity.HasIndex(e => e.Isbn)
+                .IsUnique();
         });
 
         // --- 2. AUTHOR CONFIGURATION ---

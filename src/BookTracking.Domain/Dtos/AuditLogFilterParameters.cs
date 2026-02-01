@@ -4,6 +4,7 @@ namespace BookTracking.Domain.Dtos;
 public class AuditLogFilterParameters
 {
     // Filter parameters
+    public Guid? EntityId { get; set; }
     public EntityType? EntityType { get; set; }
     public AuditType? Action { get; set; }
     public string? PropertyName { get; set; }

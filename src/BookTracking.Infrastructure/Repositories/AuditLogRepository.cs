@@ -1,0 +1,63 @@
+using BookTracking.Domain.Dtos;
+using BookTracking.Domain.Entities;
+using BookTracking.Domain.Interfaces;
+using BookTracking.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace BookTracking.Infrastructure.Repositories;
+
+public class AuditLogRepository : IAuditLogRepository
+{
+    private readonly BookTrackingDbContext _context;
+
+    public AuditLogRepository(BookTrackingDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task AddAsync(AuditLog auditLog)
+    {
+        await _context.AuditLogs.AddAsync(auditLog);
+    }
+
+    public async Task<IEnumerable<AuditLog>> SearchAsync(AuditLogFilterParameters parameters)
+    {
+        var query = _context.AuditLogs.AsQueryable();
+
+        if (parameters.EntityType.HasValue)
+            query = query.Where(x => x.EntityType == parameters.EntityType.Value);
+
+        if (parameters.Action.HasValue)
+            query = query.Where(x => x.Action == parameters.Action.Value);
+
+        if (!string.IsNullOrWhiteSpace(parameters.PropertyName))
+        {
+            var propertyName = parameters.PropertyName.Trim().ToLower();
+            query = query.Where(x => x.PropertyName.ToLower().Contains(propertyName));       
+        }
+        if (!string.IsNullOrWhiteSpace(parameters.OldValue))
+        {
+            var oldValue = parameters.OldValue.Trim().ToLower();
+            query = query.Where(x => x.OldValue != null && x.OldValue.ToLower().Contains(oldValue));
+        }
+        if (!string.IsNullOrWhiteSpace(parameters.NewValue))
+        {
+            var newValue = parameters.NewValue.Trim().ToLower();
+            query = query.Where(x => x.NewValue != null && x.NewValue.ToLower().Contains(newValue));
+        }
+        if (parameters.StartDate.HasValue)
+            query = query.Where(x => x.CreatedAt >= parameters.StartDate.Value);
+
+        if (parameters.EndDate.HasValue)
+            query = query.Where(x => x.CreatedAt <= parameters.EndDate.Value);
+
+        query = parameters.OrderBy.ToUpper() == "DESC" 
+            ? query.OrderByDescending(x => x.CreatedAt) 
+            : query.OrderBy(x => x.CreatedAt);
+
+        return await query
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .ToListAsync();
+    }
+}

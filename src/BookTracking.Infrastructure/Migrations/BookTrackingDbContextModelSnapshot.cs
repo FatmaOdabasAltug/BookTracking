@@ -140,6 +140,12 @@ namespace BookTracking.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
+                    b.Property<string>("Isbn")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character(13)")
+                        .IsFixedLength();
+
                     b.Property<DateTime>("PublishDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -152,6 +158,9 @@ namespace BookTracking.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Isbn")
+                        .IsUnique();
 
                     b.ToTable("Books");
                 });

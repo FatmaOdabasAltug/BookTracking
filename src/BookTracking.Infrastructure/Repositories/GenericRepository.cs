@@ -17,28 +17,27 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     public async Task<T?> GetByIdAsync(Guid id) 
         => await _context.Set<T>().FirstOrDefaultAsync(b => b.Id  == id);
 
-    public async Task AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         await _context.Set<T>().AddAsync(entity);
-        await _context.SaveChangesAsync();
+        return entity;
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task<T> UpdateAsync(T entity)
     {
         entity.UpdatedAt = DateTime.UtcNow;
         _context.Set<T>().Update(entity);
-        await _context.SaveChangesAsync();
+        return entity;
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        var entity = await _context.Set<T>().FindAsync(id);
-        if (entity != null)
-        {
-            entity.UpdatedAt = DateTime.UtcNow;
-            entity.IsActive = false;
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
-        }
+        var entity = await _context.Set<T>().FindAsync(id)
+                    ?? throw new KeyNotFoundException($"{typeof(T).Name} with ID {id} not found.");
+
+        entity.UpdatedAt = DateTime.UtcNow;
+        entity.IsActive = false;
+        _context.Set<T>().Update(entity);
+        
     }
 }
