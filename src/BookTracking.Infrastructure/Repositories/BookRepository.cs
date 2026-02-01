@@ -16,6 +16,13 @@ public class BookRepository : GenericRepository<Book>, IBookRepository
 
     public async Task<bool> AnyByIsbnAsync(string isbn)
     {
-        return await _context.Books.AnyAsync(x => x.Isbn == isbn && x.IsActive);
+        return await _context.Books.AnyAsync(x => x.Isbn == isbn);
+    }
+
+    public async Task<Book?> GetByIdWithAuthorsAsync(Guid id)
+    {
+        return await _context.Books.
+            Include(b => b.Authors)
+            .FirstOrDefaultAsync(b => b.Id == id);
     }
 }

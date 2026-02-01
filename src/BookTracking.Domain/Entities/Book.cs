@@ -6,9 +6,9 @@ namespace BookTracking.Domain.Entities;
 
 public class Book : BaseEntity
 {
-    public string Isbn { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public DateTime PublishDate { get; set; }
-    public ICollection<Author> Authors { get; set; } = new List<Author>();
+    public required string Isbn { get; set; }
+    public required string Title { get; set; }
+    public string? Description { get; set; }
+    public required DateTime PublishDate { get; set; }
+    public required ICollection<Author> Authors { get; set; }
 }

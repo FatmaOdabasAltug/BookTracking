@@ -3,6 +3,7 @@ using System;
 using BookTracking.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookTracking.Infrastructure.Migrations
 {
     [DbContext(typeof(BookTrackingDbContext))]
-    partial class BookTrackingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260201151141_AddFilterForIsbn")]
+    partial class AddFilterForIsbn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,6 +80,7 @@ namespace BookTracking.Infrastructure.Migrations
                         .HasColumnType("character varying(4000)");
 
                     b.Property<string>("PropertyName")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 

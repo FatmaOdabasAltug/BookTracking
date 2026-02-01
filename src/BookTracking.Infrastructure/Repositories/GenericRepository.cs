@@ -30,14 +30,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         return entity;
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<T> DeleteAsync(T entity)
     {
-        var entity = await _context.Set<T>().FindAsync(id)
-                    ?? throw new KeyNotFoundException($"{typeof(T).Name} with ID {id} not found.");
-
         entity.UpdatedAt = DateTime.UtcNow;
         entity.IsActive = false;
         _context.Set<T>().Update(entity);
-        
+        return entity;
     }
 }

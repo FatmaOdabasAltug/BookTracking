@@ -1,10 +1,11 @@
+using BookTracking.Domain.Dtos;
 using BookTracking.Domain.Entities;
+using BookTracking.Domain.Enums;
 using BookTracking.Infrastructure.Data;
 using BookTracking.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using FluentAssertions;
 using Xunit;
-using BookTracking.Domain.Enums;
 
 namespace BookTracking.UnitTests.Repositories;
 
@@ -18,70 +19,97 @@ public class AuditLogRepositoryTests
             .Options;
     }
 
-
     [Fact]
-    public async Task CreateAsync_ShouldAddAuditLog()
+    public async Task AddAsync_ShouldAddLog()
     {
         var options = GetOptions();
         using var context = new BookTrackingDbContext(options);
         var repo = new AuditLogRepository(context);
-        var auditLog = new AuditLog
-        {
-            Id = Guid.NewGuid(),
-            EntityType = EntityType.Book,
-            Action = AuditType.Update,
-            PropertyName = "Title",
-            OldValue = "Old Book Title",
-            NewValue = "New Book Title",
-            CreatedAt = DateTime.UtcNow
+        
+        var log = new AuditLog 
+        { 
+            Id = Guid.NewGuid(), 
+            EntityType = EntityType.Book, 
+            Action = AuditType.Create, 
+            EntityId = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            Description = "Created book"
         };
 
-        await repo.AddAsync(auditLog);
-
-        var result = await context.AuditLogs.FindAsync(auditLog.Id);
-        result.Should().NotBeNull();
-        result!.PropertyName.Should().Be("Title");
-    }
-
-    [Fact]
-    public async Task SearchAsync_ShouldReturnFilteredAuditLogs()
-    {
-        var options = GetOptions();
-        using var context = new BookTrackingDbContext(options);
-        var repo = new AuditLogRepository(context);
-        var auditLog1 = new AuditLog
-        {
-            Id = Guid.NewGuid(),
-            EntityType = EntityType.Book,
-            Action = AuditType.Create,
-            PropertyName = "Author",
-            OldValue = null,
-            NewValue = "Author A",
-            CreatedAt = DateTime.UtcNow.AddDays(-2)
-        };
-        var auditLog2 = new AuditLog
-        {
-            Id = Guid.NewGuid(),
-            EntityType = EntityType.Book,
-            Action = AuditType.Update,
-            PropertyName = "Title",
-            OldValue = "Old Title",
-            NewValue = "New Title",
-            CreatedAt = DateTime.UtcNow.AddDays(-1)
-        };
-        await context.AuditLogs.AddRangeAsync(auditLog1, auditLog2);
+        await repo.AddAsync(log);
         await context.SaveChangesAsync();
-        var parameters = new BookTracking.Domain.Dtos.AuditLogFilterParameters
-        {
-            EntityType = EntityType.Book,
-            Action = AuditType.Update,
-            PageNumber = 1,
-            PageSize = 10,
-            OrderBy = "ASC"
-        };
-        var results = await repo.SearchAsync(parameters);
-        results.Should().HaveCount(1);
-        results.First().PropertyName.Should().Be("Title");
+
+        var count = await context.AuditLogs.CountAsync();
+        count.Should().Be(1);
     }
-    
+
+    [Fact]
+    public async Task FilterAsync_ShouldFilterByParameters()
+    {
+        var options = GetOptions();
+        using var context = new BookTrackingDbContext(options);
+        var repo = new AuditLogRepository(context);
+
+        var log1 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, PropertyName = "Title", CreatedAt = DateTime.UtcNow.AddDays(-1), EntityId=Guid.NewGuid(), Description="Log 1" };
+        var log2 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Author, Action = AuditType.Update, PropertyName = "Name", CreatedAt = DateTime.UtcNow, EntityId=Guid.NewGuid(), Description="Log 2" };
+        var log3 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Delete, PropertyName = "Description", CreatedAt = DateTime.UtcNow.AddDays(1), EntityId=Guid.NewGuid(), Description="Log 3" };
+
+        await context.AuditLogs.AddRangeAsync(log1, log2, log3);
+        await context.SaveChangesAsync();
+
+
+        var result1 = await repo.FilterAsync(new AuditLogFilterParameters { EntityType = EntityType.Book, PageNumber=1, PageSize=10, OrderBy="ASC" });
+        result1.Should().HaveCount(2);
+
+
+        var result2 = await repo.FilterAsync(new AuditLogFilterParameters { Action = AuditType.Update, PageNumber=1, PageSize=10, OrderBy="ASC" });
+        result2.Should().HaveCount(1);
+        result2.First()!.Id.Should().Be(log2.Id);
+
+        var result3 = await repo.FilterAsync(new AuditLogFilterParameters { PropertyName = "Title", PageNumber=1, PageSize=10, OrderBy="ASC" });
+        result3.Should().HaveCount(1);
+
+        var result4 = await repo.FilterAsync(new AuditLogFilterParameters { StartDate = DateTime.UtcNow.AddHours(-1), EndDate = DateTime.UtcNow.AddHours(1), PageNumber=1, PageSize=10, OrderBy="ASC" });
+        result4.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task FilterAsync_ShouldHandlePagination()
+    {
+        var options = GetOptions();
+        using var context = new BookTrackingDbContext(options);
+        var repo = new AuditLogRepository(context);
+
+        for(int i=0; i<5; i++)
+        {
+             await context.AuditLogs.AddAsync(new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow.AddMinutes(i), Description=$"Log {i}" });
+        }
+        await context.SaveChangesAsync();
+
+        var result = await repo.FilterAsync(new AuditLogFilterParameters { PageNumber = 2, PageSize = 2, OrderBy="ASC" });
+        result.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task FilterAsync_ShouldFilterByCombinedParameters()
+    {
+        var options = GetOptions();
+        using var context = new BookTrackingDbContext(options);
+        var repo = new AuditLogRepository(context);
+
+        // Match: Type=Book AND Action=Create
+        var log1 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, Description="Log 1", EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
+        // No Match: Type=Book but Action=Update
+        var log2 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Update, Description="Log 2", EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
+         // No Match: Type=Author
+        var log3 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Author, Action = AuditType.Create, Description="Log 3", EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
+
+        await context.AuditLogs.AddRangeAsync(log1, log2, log3);
+        await context.SaveChangesAsync();
+
+        var result = await repo.FilterAsync(new AuditLogFilterParameters { EntityType = EntityType.Book, Action = AuditType.Create, PageNumber=1, PageSize=10, OrderBy="ASC" });
+        
+        result.Should().HaveCount(1);
+        result.First()!.Id.Should().Be(log1.Id);
+    }
 }

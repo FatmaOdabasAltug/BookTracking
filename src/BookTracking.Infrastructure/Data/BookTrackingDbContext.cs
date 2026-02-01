@@ -38,6 +38,7 @@ public class BookTrackingDbContext : DbContext
                 .HasMaxLength(13)
                 .IsFixedLength();
             entity.HasIndex(e => e.Isbn)
+                .HasFilter("\"IsActive\" = true")
                 .IsUnique();
         });
 
@@ -76,7 +77,7 @@ public class BookTrackingDbContext : DbContext
             entity.Property(e => e.EntityId)
                 .IsRequired();
             entity.Property(e => e.PropertyName)
-                .IsRequired()
+                .IsRequired(false)
                 .HasMaxLength(100);
             entity.Property(e => e.OldValue)
                 .IsRequired(false)
@@ -85,13 +86,15 @@ public class BookTrackingDbContext : DbContext
                 .IsRequired(false)
                 .HasMaxLength(4000);
             entity.Property(e => e.Description)
+                .IsRequired()
                 .HasMaxLength(500);
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
-
+        modelBuilder.Entity<Book>().HasQueryFilter(b => b.IsActive);
+        modelBuilder.Entity<Author>().HasQueryFilter(a => a.IsActive);
         base.OnModelCreating(modelBuilder);
     }
 }

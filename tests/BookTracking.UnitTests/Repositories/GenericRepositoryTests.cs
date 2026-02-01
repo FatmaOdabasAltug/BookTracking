@@ -23,9 +23,13 @@ public class GenericRepositoryTests
         var options = GetOptions();
         using var context = new BookTrackingDbContext(options);
         var repo = new GenericRepository<Book>(context);
-        var book = new Book { Id = Guid.NewGuid(), Title = "Test Book", IsActive = true };
+        var book = new Book { Id = Guid.NewGuid(), Title = "Test Book", IsActive = true, 
+            Isbn = "1234567890", PublishDate = DateTime.UtcNow, Authors = new List<Author> { new Author { Id = Guid.NewGuid(), Name = "Author 1" } } };
         await repo.AddAsync(book);
-        await repo.DeleteAsync(book.Id);
+        await context.SaveChangesAsync();
+
+        await repo.DeleteAsync(book);
+        await context.SaveChangesAsync();
 
         var result = await context.Books.FindAsync(book.Id);
         result.Should().NotBeNull();
@@ -34,17 +38,20 @@ public class GenericRepositoryTests
     }
 
     [Fact]
-    public async Task DeleteAsync_WhenEntityDoesNotExist_ShouldThrowKeyNotFoundException()
+    public async Task DeleteAsync_WhenEntityDoesNotExist_ShouldThrowConcurrencyException()
     {
         var options = GetOptions();
         using var context = new BookTrackingDbContext(options);
         var repo = new GenericRepository<Book>(context);
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentBook = new Book { Id = Guid.NewGuid(), Title = "Non-existent Book" ,Description="N/A", Isbn="N/A", PublishDate=DateTime.UtcNow, Authors=new List<Author>()};
 
-        var act = async () => await repo.DeleteAsync(nonExistentId);
+        var act = async () => 
+        {
+            await repo.DeleteAsync(nonExistentBook);
+            await context.SaveChangesAsync();
+        };
 
-        await act.Should().ThrowAsync<KeyNotFoundException>()
-            .WithMessage($"Book with ID {nonExistentId} not found.");
+        await act.Should().ThrowAsync<DbUpdateConcurrencyException>();
     }
 
 
@@ -54,14 +61,16 @@ public class GenericRepositoryTests
         var options = GetOptions();
         using var context = new BookTrackingDbContext(options);
         var repo = new GenericRepository<Book>(context);
-        var book = new Book { Id = Guid.NewGuid(), Title = "Book 2" };
+        var book = new Book { Id = Guid.NewGuid(), Title = "Test Book 2", IsActive = true, 
+            Isbn = "1234569990", PublishDate = DateTime.UtcNow, Authors = new List<Author> { new Author { Id = Guid.NewGuid(), Name = "Author 2" } } };
 
         await repo.AddAsync(book);
+        await context.SaveChangesAsync();
 
         var result = await repo.GetByIdAsync(book.Id);
 
         result.Should().NotBeNull();
-        result!.Title.Should().Be("Book 2");
+        result!.Title.Should().Be("Test Book 2");
         result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }
 
@@ -73,9 +82,11 @@ public class GenericRepositoryTests
         var repo = new GenericRepository<Author>(context);
         var author = new Author { Id = Guid.NewGuid(), Name = "Old Name" };
         await repo.AddAsync(author);
+        await context.SaveChangesAsync(); 
 
         author.Name = "New Name";
         await repo.UpdateAsync(author);
+        await context.SaveChangesAsync();
 
         var result = await repo.GetByIdAsync(author.Id);
         result!.Name.Should().Be("New Name");

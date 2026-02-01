@@ -9,8 +9,8 @@ public class AuditLog : BaseEntity
     public Guid EntityId { get; set; }
     public EntityType EntityType { get; set; }
     public AuditType Action { get; set; }
-    public string PropertyName { get; set; } = string.Empty; // Changed property name example : "Title", "Author","Description"
+    public string? PropertyName { get; set; } // Changed property name example : "Title", "Author", etc.
     public string? OldValue { get; set; }
     public string? NewValue { get; set; }
-    public string Description { get; set; } = string.Empty;
+    public required string Description { get; set; }
 }
