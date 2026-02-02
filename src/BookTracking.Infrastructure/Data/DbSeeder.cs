@@ -7,6 +7,7 @@ public static class DbSeeder
 {
     public static void Seed(BookTrackingDbContext context)
     {        
+
         if (!context.Books.Any())
         {
             var rowling = new Author { Name = "J.K. Rowling", IsActive = true, CreatedAt = DateTime.UtcNow };

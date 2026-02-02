@@ -51,7 +51,7 @@ public class CreateBookRequestValidatorTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == "Isbn" && e.ErrorMessage.Contains("13 characters long"));
+        result.Errors.Should().Contain(e => e.PropertyName == "Isbn" && e.ErrorMessage.Contains("ISBN must consist of 13 digits"));
     }
 
     [Fact]

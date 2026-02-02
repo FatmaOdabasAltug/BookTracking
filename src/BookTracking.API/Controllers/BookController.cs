@@ -42,7 +42,7 @@ public class BookController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ApiResponse<BookResponse>.Failure("An unexpected error occurred while creating the book.", 500));
+            return StatusCode(500, ApiResponse<BookResponse>.Failure($"An unexpected error occurred: {ex.Message} Inner: {ex.InnerException?.Message}", 500));
         }
     }
 
@@ -86,6 +86,20 @@ public class BookController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, ApiResponse<object>.Failure("An unexpected error occurred while deleting the book.", 500));
+        }
+    }
+    [HttpGet("list")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<BookResponse>>>> GetAll()
+    {
+        try
+        {
+            var books = await _bookService.GetAllBooksAsync();
+            var bookResponses = _mapper.Map<IEnumerable<BookResponse>>(books);
+            return Ok(ApiResponse<IEnumerable<BookResponse>>.Success(bookResponses, 200, "Books retrieved successfully"));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<IEnumerable<BookResponse>>.Failure("An unexpected error occurred while retrieving books.", 500));
         }
     }
 }

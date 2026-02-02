@@ -20,5 +20,5 @@ public class FilterAuditLogRequestDto
     // Pagination and sorting
     public int PageNumber { get; set; } = PageConstants.DefaultPageNumber;
     public int PageSize { get; set; } = PageConstants.DefaultPageSize;
-    public string OrderBy { get; set; } = SortOrder.Ascending;
+    public string OrderBy { get; set; } = SortOrder.Descending;
 }

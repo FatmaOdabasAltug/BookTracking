@@ -39,4 +39,12 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         _context.Set<T>().Update(entity);
         return entity;
     }
+
+    public virtual async Task<IEnumerable<T>> GetAllAsync()
+    {
+        return await _context.Set<T>()
+            .Where(x => x.IsActive)
+            .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
+            .ToListAsync();
+    }
 }

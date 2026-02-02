@@ -11,7 +11,8 @@ public class MappingProfile : Profile
     {
         // Entity -> DTO
         CreateMap<Book, BookDto>()
-            .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.Authors.Select(a => a.Id).ToList()));
+            .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.Authors.Select(a => a.Id).ToList()))
+            .ForMember(dest => dest.AuthorDetails, opt => opt.MapFrom(src => src.Authors));
         
         // DTO -> Entity
         // Authors are represented as a list of Guid in DTO; we ignore them here
@@ -20,7 +21,12 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Authors, opt => opt.Ignore());
 
         CreateMap<AuthorDto, Author>();
-        CreateMap<Author, AuthorDto>();
+        CreateMap<Author, AuthorDto>()
+             .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books.Select(b => b.Id).ToList()))
+             .ForMember(dest => dest.BookDetails, opt => opt.MapFrom(src => src.Books));
+
+        CreateMap<Author, AuthorSummaryDto>();
+        CreateMap<Book, BookSummaryDto>();
         CreateMap<AuditLog, AuditLogDto>();
         CreateMap<AuditLogDto, AuditLog>();
 

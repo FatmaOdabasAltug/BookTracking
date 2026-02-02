@@ -80,4 +80,18 @@ public class AuthorController : ControllerBase
             return StatusCode(500, ApiResponse<object>.Failure("An unexpected error occurred while deleting the author.", 500));
         }
     }
+    [HttpGet("list")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<AuthorResponse>>>> GetAll()
+    {
+        try
+        {
+            var authors = await _authorService.GetAllAuthorsAsync();
+            var authorResponses = _mapper.Map<IEnumerable<AuthorResponse>>(authors);
+            return Ok(ApiResponse<IEnumerable<AuthorResponse>>.Success(authorResponses, 200, "Authors retrieved successfully"));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<IEnumerable<AuthorResponse>>.Failure("An unexpected error occurred while retrieving authors.", 500));
+        }
+    }
 }

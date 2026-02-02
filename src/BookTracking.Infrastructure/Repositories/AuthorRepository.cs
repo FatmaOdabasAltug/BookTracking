@@ -25,4 +25,13 @@ public class AuthorRepository : GenericRepository<Author>, IAuthorRepository
             .Include(a => a.Books)
             .FirstOrDefaultAsync(a => a.Id == id);
     }
+
+    public override async Task<IEnumerable<Author>> GetAllAsync()
+    {
+        return await _context.Authors
+            .Include(a => a.Books)
+            .Where(x => x.IsActive)
+            .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
+            .ToListAsync();
+    }
 }

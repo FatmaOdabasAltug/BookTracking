@@ -8,5 +8,5 @@ public class BookResponse
     public string? Description { get; set; }
     public required DateTime PublishDate { get; set; }
     public bool IsActive { get; set; }
-    public required List<Guid> Authors { get; set; }
+    public required List<AuthorSummaryResponse> Authors { get; set; }
 }

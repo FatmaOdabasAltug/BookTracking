@@ -51,9 +51,10 @@ public class AuditLogRepository : IAuditLogRepository
         if (parameters.EndDate.HasValue)
             query = query.Where(x => x.CreatedAt <= parameters.EndDate.Value);
 
-        query = parameters.OrderBy.ToUpper() == "DESC" 
-            ? query.OrderByDescending(x => x.CreatedAt) 
-            : query.OrderBy(x => x.CreatedAt);
+        // Default to Descending (Newest first) unless "ASC" is explicitly requested
+        query = parameters.OrderBy?.ToUpper() == "ASC" 
+            ? query.OrderBy(x => x.CreatedAt) 
+            : query.OrderByDescending(x => x.CreatedAt);
 
         return await query
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)

@@ -86,4 +86,10 @@ public class AuthorService : IAuthorService
     }
 
 
+
+    public async Task<IEnumerable<AuthorDto>> GetAllAuthorsAsync()
+    {
+        var authors = await _authorRepository.GetAllAsync();
+        return _mapper.Map<IEnumerable<AuthorDto>>(authors);
+    }
 }

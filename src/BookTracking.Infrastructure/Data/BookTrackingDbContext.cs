@@ -71,9 +71,11 @@ public class BookTrackingDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Action)
-                .IsRequired();
+                .IsRequired()
+                .HasConversion<string>();
             entity.Property(e => e.EntityType)
-                .IsRequired();
+                .IsRequired()
+                .HasConversion<string>();
             entity.Property(e => e.EntityId)
                 .IsRequired();
             entity.Property(e => e.PropertyName)

@@ -34,6 +34,7 @@ public class BookService : IBookService
             throw new KeyNotFoundException("One or more authors not found.");
 
         var bookEntity = _mapper.Map<Book>(bookDto);
+        bookEntity.PublishDate = DateTime.SpecifyKind(bookDto.PublishDate, DateTimeKind.Utc);
         bookEntity.Authors = authorEntityList.ToList();
         var createdBook = await _bookRepository.AddAsync(bookEntity);
         await _auditLogService.CreateLogAsync(new AuditLogDto
@@ -104,7 +105,7 @@ public class BookService : IBookService
                 OldValue = existingBookEntity.PublishDate.ToString("o"),
                 NewValue = bookDto.PublishDate.ToString("o")
             });
-            existingBookEntity.PublishDate = bookDto.PublishDate;
+            existingBookEntity.PublishDate = DateTime.SpecifyKind(bookDto.PublishDate, DateTimeKind.Utc);
         }
 
         var newAuthorIds = bookDto.Authors;
@@ -158,4 +159,9 @@ public class BookService : IBookService
         await _unitOfWork.CommitAsync();
     }
 
+    public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
+    {
+        var books = await _bookRepository.GetAllAsync();
+        return _mapper.Map<IEnumerable<BookDto>>(books);
+    }
 }

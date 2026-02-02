@@ -106,7 +106,7 @@ public class AuthorServiceTests
 
         Func<Task> act = async () => await _authorService.DeleteAuthorAsync(authorId);
 
-        await act.Should().ThrowAsync<InvalidOperationException>()
+        await act.Should().ThrowAsync<KeyNotFoundException>()
             .WithMessage($"Author id {authorId} not found.");
     }
 
