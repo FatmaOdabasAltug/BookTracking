@@ -9,6 +9,8 @@ public class FilterAuditLogRequest
     public EntityType? EntityType { get; set; }
     public AuditType? Action { get; set; }
     public string? PropertyName { get; set; }
+    public string? OldValue { get; set; }
+    public string? NewValue { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     
