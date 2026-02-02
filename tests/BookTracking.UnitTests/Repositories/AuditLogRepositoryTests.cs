@@ -112,4 +112,27 @@ public class AuditLogRepositoryTests
         result.Should().HaveCount(1);
         result.First()!.Id.Should().Be(log1.Id);
     }
+    [Fact]
+    public async Task FilterAsync_ShouldSortByNewestByDefault()
+    {
+        var options = GetOptions();
+        using var context = new BookTrackingDbContext(options);
+        var repo = new AuditLogRepository(context);
+
+        var log1 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, Description="Log 1", EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow.AddMinutes(-10) };
+        var log2 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, Description="Log 2", EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
+        var log3 = new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, Description="Log 3", EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow.AddMinutes(-5) };
+
+        await context.AuditLogs.AddRangeAsync(log1, log2, log3);
+        await context.SaveChangesAsync();
+
+        // Use default parameters (OrderBy should be "DESC")
+        var result = await repo.FilterAsync(new AuditLogFilterParameters { PageNumber=1, PageSize=10 });
+        
+        result.Should().HaveCount(3);
+        var list = result.ToList();
+        list[0]!.Id.Should().Be(log2.Id); // Newest
+        list[2]!.Id.Should().Be(log1.Id);  // Oldest
+        list[1]!.Id.Should().Be(log3.Id);      // Middle
+    }
 }

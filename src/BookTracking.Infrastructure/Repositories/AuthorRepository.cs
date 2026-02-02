@@ -34,4 +34,9 @@ public class AuthorRepository : GenericRepository<Author>, IAuthorRepository
             .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task<bool> IsAuthorNameExistsAsync(string name)
+    {
+        return await _context.Authors.AnyAsync(a => a.Name.ToLower() == name.ToLower());
+    }   
 }

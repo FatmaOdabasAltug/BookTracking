@@ -24,6 +24,9 @@ public class AuthorService : IAuthorService
 
     public async Task<AuthorDto> CreateAuthorAsync(AuthorDto dto)
     {
+        if (await _authorRepository.IsAuthorNameExistsAsync(dto.Name))
+            throw new InvalidOperationException($"Author name '{dto.Name}' already exists.");
+
         var createdAuthor = await _authorRepository.AddAsync(new Author
         {
             Name = dto.Name
@@ -43,22 +46,24 @@ public class AuthorService : IAuthorService
     {
         var currentAuthorEntity = await _authorRepository.GetByIdAsync(dto.Id);
         if (currentAuthorEntity == null)
-            throw new ArgumentException("Author not found");
-
+            throw new KeyNotFoundException($"Author id {dto.Id} not found.");
         if(currentAuthorEntity.Name != dto.Name)
         {
-            currentAuthorEntity.Name = dto.Name;
-            var updatedAuthor = await _authorRepository.UpdateAsync(currentAuthorEntity);
+            if (await _authorRepository.IsAuthorNameExistsAsync(dto.Name))
+                throw new InvalidOperationException($"Author name '{dto.Name}' already exists.");
+            
             await _auditLogService.CreateLogAsync(new AuditLogDto
             {
                 Action = AuditType.Update,
                 EntityType = EntityType.Author,
-                EntityId = updatedAuthor.Id,
-                Description = $"Author name changed from '{currentAuthorEntity.Name}' to '{updatedAuthor.Name}'",
+                EntityId = currentAuthorEntity.Id,
+                Description = $"Author name changed from '{currentAuthorEntity.Name}' to '{dto.Name}'",
                 PropertyName = "Name",
                 OldValue = currentAuthorEntity.Name,
-                NewValue = updatedAuthor.Name
+                NewValue = dto.Name
             });
+            currentAuthorEntity.Name = dto.Name;
+            var updatedAuthor = await _authorRepository.UpdateAsync(currentAuthorEntity);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<AuthorDto>(updatedAuthor);
         }
