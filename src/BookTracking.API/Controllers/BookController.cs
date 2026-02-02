@@ -5,6 +5,7 @@ using BookTracking.Application.Dtos;
 using BookTracking.Application.Interfaces;
 using BookTracking.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace BookTracking.API.Controllers;
 
@@ -21,7 +22,7 @@ public class BookController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<ActionResult<ApiResponse<BookResponse>>> Create([FromBody] CreateBookRequest request)
     {
         try
@@ -45,7 +46,7 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [HttpPut("update")]
     public async Task<ActionResult<BookResponse>> Update([FromBody] UpdateBookRequest request)
     {
         try
@@ -70,7 +71,7 @@ public class BookController : ControllerBase
 
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
