@@ -18,5 +18,5 @@ public class AuditLogFilterParameters
     // Pagination and sorting
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
-    public string OrderBy { get; set; } = "ASC";
+    public string OrderBy { get; set; } = "DESC";
 }
