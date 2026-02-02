@@ -18,7 +18,8 @@ public class MappingProfile : Profile
         // Authors are represented as a list of Guid in DTO; we ignore them here
         // because the service resolves Author entities separately.
         CreateMap<BookDto, Book>()
-            .ForMember(dest => dest.Authors, opt => opt.Ignore());
+            .ForMember(dest => dest.Authors, opt => opt.Ignore())
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
 
         CreateMap<AuthorDto, Author>();
         CreateMap<Author, AuthorDto>()
