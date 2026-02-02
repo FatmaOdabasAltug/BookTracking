@@ -3,11 +3,12 @@ using BookTracking.API.Models;
 using BookTracking.Application.Dtos;
 
 namespace BookTracking.API.Mappings;
-public class MappingProfile : Profile
+public class ApiMappingProfile : Profile
 {
-    public MappingProfile()
+    public ApiMappingProfile()
     {
         CreateMap<CreateBookRequest, BookDto>().ReverseMap();
         CreateMap<UpdateBookRequest, BookDto>().ReverseMap();
+        CreateMap<BookDto, BookResponse>();
     }
 }

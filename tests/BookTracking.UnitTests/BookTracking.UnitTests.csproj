@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BookTracking.Domain\BookTracking.Domain.csproj" />
     <ProjectReference Include="..\..\src\BookTracking.Infrastructure\BookTracking.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BookTracking.API\BookTracking.API.csproj" />
   </ItemGroup>
 
 </Project>

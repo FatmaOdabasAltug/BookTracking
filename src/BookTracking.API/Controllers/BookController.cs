@@ -3,6 +3,7 @@ using AutoMapper;
 using BookTracking.API.Models;
 using BookTracking.Application.Dtos;
 using BookTracking.Application.Interfaces;
+using BookTracking.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookTracking.API.Controllers;
@@ -21,48 +22,50 @@ public class BookController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateBookRequest request)
+    public async Task<ActionResult<ApiResponse<BookResponse>>> Create([FromBody] CreateBookRequest request)
     {
         try
         {
             var bookDto = _mapper.Map<BookDto>(request);
-            await _bookService.CreateBookAsync(bookDto);
-            return Ok();
+            var createdBook = await _bookService.CreateBookAsync(bookDto);
+            var bookResponse = _mapper.Map<BookResponse>(createdBook);
+            return Ok(ApiResponse<BookResponse>.Success(bookResponse, 201, "Book created successfully"));
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(ApiResponse<BookResponse>.Failure(ex.Message, 400));
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ApiResponse<BookResponse>.Failure(ex.Message, 404));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An unexpected error occurred while creating the book.", details = ex.Message });
+            return StatusCode(500, ApiResponse<BookResponse>.Failure("An unexpected error occurred while creating the book.", 500));
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Update([FromBody] UpdateBookRequest request)
+    [HttpPut]
+    public async Task<ActionResult<BookResponse>> Update([FromBody] UpdateBookRequest request)
     {
         try
         {
             var bookDto = _mapper.Map<BookDto>(request);
-            await _bookService.UpdateBookAsync(bookDto);
-            return Ok();
+            var updatedBook = await _bookService.UpdateBookAsync(bookDto);
+            var bookResponse = _mapper.Map<BookResponse>(updatedBook);
+            return Ok(ApiResponse<BookResponse>.Success(bookResponse, 200, "Book updated successfully"));
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(ApiResponse<BookResponse>.Failure(ex.Message, 400));
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ApiResponse<BookResponse>.Failure(ex.Message, 404));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An unexpected error occurred while updating the book.", details = ex.Message });
+            return StatusCode(500, ApiResponse<BookResponse>.Failure("An unexpected error occurred while updating the book.", 500));
         }
 
     }
@@ -73,15 +76,15 @@ public class BookController : ControllerBase
         try
         {
             await _bookService.DeleteBookAsync(id);
-            return Ok();
+            return Ok(ApiResponse<object>.Success(null, 200, "Book deleted successfully"));
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ApiResponse<object>.Failure(ex.Message, 404));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An unexpected error occurred while deleting the book.", details = ex.Message });
+            return StatusCode(500, ApiResponse<object>.Failure("An unexpected error occurred while deleting the book.", 500));
         }
     }
 }

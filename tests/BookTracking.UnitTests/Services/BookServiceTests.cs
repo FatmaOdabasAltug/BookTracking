@@ -88,7 +88,7 @@ public class BookServiceTests
         Func<Task> act = async () => await _bookService.CreateBookAsync(bookDto);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
+        await act.Should().ThrowAsync<KeyNotFoundException>()
             .WithMessage("One or more authors not found.");
     }
 
@@ -122,7 +122,7 @@ public class BookServiceTests
 
         Func<Task> act = async () => await _bookService.UpdateBookAsync(bookDto);
 
-        await act.Should().ThrowAsync<InvalidOperationException>()
+        await act.Should().ThrowAsync<KeyNotFoundException>()
             .WithMessage($"Book id {bookDto.Id} not found.");
     }
 
@@ -214,7 +214,7 @@ public class BookServiceTests
 
         Func<Task> act = async () => await _bookService.DeleteBookAsync(bookId);
 
-        await act.Should().ThrowAsync<InvalidOperationException>()
+        await act.Should().ThrowAsync<KeyNotFoundException>()
             .WithMessage($"Book id {bookId} not found.");
     }
 

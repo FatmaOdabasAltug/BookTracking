@@ -19,6 +19,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     public async Task<T> AddAsync(T entity)
     {
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.IsActive = true;
         await _context.Set<T>().AddAsync(entity);
         return entity;
     }

@@ -54,6 +54,8 @@ public class BookService : IBookService
         if (existingBookEntity == null)
             throw new KeyNotFoundException($"Book id {bookDto.Id} not found.");
 
+        if(existingBookEntity.Isbn != bookDto.Isbn)
+            throw new InvalidOperationException("ISBN cannot be changed.");
 
         if (existingBookEntity.Title != bookDto.Title)
         {
