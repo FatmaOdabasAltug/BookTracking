@@ -69,7 +69,7 @@ public class AuthorService : IAuthorService
     {
         var authorEntity = await _authorRepository.GetByIdWithBooksAsync(id);
         if (authorEntity == null)
-            throw new InvalidOperationException($"Author id {id} not found.");
+            throw new KeyNotFoundException($"Author id {id} not found.");
 
         if(authorEntity.Books != null && authorEntity.Books.Any())
             throw new InvalidOperationException("Cannot delete author with associated books.");

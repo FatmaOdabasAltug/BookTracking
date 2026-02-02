@@ -1,6 +1,7 @@
 namespace BookTracking.Application.Mappings;
 using AutoMapper;
 using BookTracking.Application.Dtos;
+using BookTracking.Domain.Dtos;
 using BookTracking.Domain.Entities;
 using System.Linq;
 
@@ -22,5 +23,7 @@ public class MappingProfile : Profile
         CreateMap<Author, AuthorDto>();
         CreateMap<AuditLog, AuditLogDto>();
         CreateMap<AuditLogDto, AuditLog>();
+
+        CreateMap<FilterAuditLogRequestDto, AuditLogFilterParameters>();
     }
 }
