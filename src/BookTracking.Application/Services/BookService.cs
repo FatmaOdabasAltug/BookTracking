@@ -31,7 +31,7 @@ public class BookService : IBookService
 
         var authorEntityList = await _authorRepository.GetAuthorListAsync(bookDto.Authors);
         if (authorEntityList.Count() != bookDto.Authors.Count)
-            throw new InvalidOperationException("One or more authors not found.");
+            throw new KeyNotFoundException("One or more authors not found.");
 
         var bookEntity = _mapper.Map<Book>(bookDto);
         bookEntity.Authors = authorEntityList.ToList();
@@ -52,7 +52,7 @@ public class BookService : IBookService
         var updateFlag = false;
         var existingBookEntity = await _bookRepository.GetByIdWithAuthorsAsync(bookDto.Id);
         if (existingBookEntity == null)
-            throw new InvalidOperationException($"Book id {bookDto.Id} not found.");
+            throw new KeyNotFoundException($"Book id {bookDto.Id} not found.");
 
 
         if (existingBookEntity.Title != bookDto.Title)
@@ -108,7 +108,7 @@ public class BookService : IBookService
         var newAuthorIds = bookDto.Authors;
         var newAuthorEntityList = await _authorRepository.GetAuthorListAsync(newAuthorIds);
         if (newAuthorEntityList.Count() != newAuthorIds.Count)
-            throw new InvalidOperationException("One or more authors not found.");
+            throw new KeyNotFoundException("One or more authors not found.");
         var currentAuthorIds = existingBookEntity.Authors.Select(a => a.Id).ToList();
 
         if(!currentAuthorIds.SequenceEqual(newAuthorIds))// Authors have changed
@@ -144,7 +144,7 @@ public class BookService : IBookService
     {
         var deletedBookEntity = await _bookRepository.GetByIdAsync(id);
         if (deletedBookEntity == null)
-            throw new InvalidOperationException($"Book id {id} not found.");
+            throw new KeyNotFoundException($"Book id {id} not found.");
         var deletedBook = await _bookRepository.DeleteAsync(deletedBookEntity);
         await _auditLogService.CreateLogAsync(new AuditLogDto
         {
