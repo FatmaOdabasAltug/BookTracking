@@ -42,7 +42,7 @@ public class BookController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ApiResponse<BookResponse>.Failure($"An unexpected error occurred: {ex.Message} Inner: {ex.InnerException?.Message}", 500));
+            return StatusCode(500, ApiResponse<BookResponse>.Failure("An unexpected error occurred while creating the book.", 500));
         }
     }
 
