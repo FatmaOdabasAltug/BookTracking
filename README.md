@@ -30,4 +30,4 @@ You can test the following endpoints via Swagger:
 
 - **Books** (`/api/Book`): Manage complete book inventory (List, Create, Update, Delete).
 - **Authors** (`/api/Author`): Manage author records (List, Create, Update, Delete).
-- **Audit Logs** (`/api/AuditLog`): Filter and view the history of all data changes.
+- **Audit Logs** (`/api/AuditLog`): Filter, group, and view the history of all data changes (supports grouping by entity, entity type, date, and action).
