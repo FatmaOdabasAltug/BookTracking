@@ -63,37 +63,33 @@ public class AuditLogRepository : IAuditLogRepository
             ? query.OrderBy(x => x.CreatedAt) 
             : query.OrderByDescending(x => x.CreatedAt);
 
-        // Fetch all filtered and ordered data
-        var allLogs = await query.ToListAsync();
+        var paginatedLogs = await query
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .ToListAsync();
 
-        // Group based on GroupBy parameter
         var grouped = parameters.GroupBy switch
         {
-            GroupByOption.EntityId => allLogs
+            GroupByOption.EntityId => paginatedLogs
                 .GroupBy(x => x.EntityId.ToString())
                 .ToDictionary(g => g.Key, g => g.ToList()),
                 
-            GroupByOption.EntityType => allLogs
+            GroupByOption.EntityType => paginatedLogs
                 .GroupBy(x => x.EntityType.ToString())
                 .ToDictionary(g => g.Key, g => g.ToList()),
                 
-            GroupByOption.Action => allLogs
+            GroupByOption.Action => paginatedLogs
                 .GroupBy(x => x.Action.ToString())
                 .ToDictionary(g => g.Key, g => g.ToList()),
                 
-            GroupByOption.Date => allLogs
+            GroupByOption.Date => paginatedLogs
                 .GroupBy(x => x.CreatedAt.Date.ToString("yyyy-MM-dd"))
                 .ToDictionary(g => g.Key, g => g.ToList()),
                 
             _ => new Dictionary<string, List<AuditLog>> 
-                { { "All", allLogs } }
+                { { "All", paginatedLogs } }
         };
 
-        var paginatedGroups = grouped
-            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-            .Take(parameters.PageSize)
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-        return paginatedGroups;
+        return grouped;
     }
 }
