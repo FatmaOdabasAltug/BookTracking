@@ -32,10 +32,10 @@ public class AuditLogService : IAuditLogService
             });
     }
 
-    public async Task<IEnumerable<AuditLogDto?>> FilterAuditLogsAsync(FilterAuditLogRequestDto parameters)
+    public async Task<IEnumerable<AuditLogDto?>> GetFilteredAuditLogsAsync(AuditLogFilterCriteriaDto parameters)
     {
-        var filterparameters = _mapper.Map<AuditLogFilterParameters>(parameters);
-        var auditLogs = await _auditLogRepository.FilterAsync(filterparameters);
+        var filterParameters = _mapper.Map<AuditLogFilterCriteria>(parameters);
+        var auditLogs = await _auditLogRepository.GetByFilterAsync(filterParameters);
         return _mapper.Map<IEnumerable<AuditLogDto?>>(auditLogs);
     }
 }

@@ -1,7 +1,7 @@
 using BookTracking.Domain.Constants;
 using BookTracking.Domain.Enums;
 namespace BookTracking.Domain.Dtos;
-public class AuditLogFilterParameters
+public class AuditLogFilterCriteria
 {
     // Filter parameters
     public Guid? EntityId { get; set; }

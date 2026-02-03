@@ -52,16 +52,16 @@ public class AuditLogServiceTests
     [Fact]
     public async Task FilterAuditLogsAsync_ShouldReturnLogs()
     {
-        var request = new FilterAuditLogRequestDto { PageNumber = 1, PageSize = 10 };
-        var filterParams = new AuditLogFilterParameters { PageNumber = 1, PageSize = 10 };
+        var request = new AuditLogFilterCriteriaDto { PageNumber = 1, PageSize = 10 };
+        var filterParams = new AuditLogFilterCriteria { PageNumber = 1, PageSize = 10 };
         var logs = new List<AuditLog> { new AuditLog { Description = "Log 1" } };
         var logDtos = new List<AuditLogDto> { new AuditLogDto { Description = "Log 1" } };
 
-        _mockMapper.Setup(m => m.Map<AuditLogFilterParameters>(request)).Returns(filterParams);
-        _mockAuditLogRepository.Setup(r => r.FilterAsync(filterParams)).ReturnsAsync(logs);
+        _mockMapper.Setup(m => m.Map<AuditLogFilterCriteria>(request)).Returns(filterParams);
+        _mockAuditLogRepository.Setup(r => r.GetByFilterAsync(filterParams)).ReturnsAsync(logs);
         _mockMapper.Setup(m => m.Map<IEnumerable<AuditLogDto?>>(logs)).Returns(logDtos);
 
-        var result = await _auditLogService.FilterAuditLogsAsync(request);
+        var result = await _auditLogService.GetFilteredAuditLogsAsync(request);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(1);

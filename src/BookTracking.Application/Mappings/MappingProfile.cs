@@ -31,6 +31,6 @@ public class MappingProfile : Profile
         CreateMap<AuditLog, AuditLogDto>();
         CreateMap<AuditLogDto, AuditLog>();
 
-        CreateMap<FilterAuditLogRequestDto, AuditLogFilterParameters>();
+        CreateMap<AuditLogFilterCriteriaDto, AuditLogFilterCriteria>();
     }
 }

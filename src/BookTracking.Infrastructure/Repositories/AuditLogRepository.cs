@@ -21,7 +21,7 @@ public class AuditLogRepository : IAuditLogRepository
         await _context.AuditLogs.AddAsync(auditLog);
     }
 
-    public async Task<IEnumerable<AuditLog?>> FilterAsync(AuditLogFilterParameters parameters)
+    public async Task<IEnumerable<AuditLog?>> GetByFilterAsync(AuditLogFilterCriteria parameters)
     {
         var query = _context.AuditLogs.AsQueryable();
 

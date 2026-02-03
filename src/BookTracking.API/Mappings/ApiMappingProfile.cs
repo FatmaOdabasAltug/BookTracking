@@ -20,7 +20,7 @@ public class ApiMappingProfile : Profile
         CreateMap<AuthorSummaryDto, AuthorSummaryResponse>();
         CreateMap<BookSummaryDto, BookSummaryResponse>();
 
-        CreateMap<FilterAuditLogRequest, FilterAuditLogRequestDto>();
+        CreateMap<FilterAuditLogRequest, AuditLogFilterCriteriaDto>();
         CreateMap<AuditLogDto, AuditLogResponse>();
     }
 }

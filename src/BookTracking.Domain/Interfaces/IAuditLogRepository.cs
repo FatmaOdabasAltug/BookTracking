@@ -5,6 +5,6 @@ namespace BookTracking.Domain.Interfaces;
 public interface IAuditLogRepository
 {
     Task AddAsync(AuditLog auditLog);
-    Task<IEnumerable<AuditLog?>> FilterAsync(AuditLogFilterParameters parameters);
+    Task<IEnumerable<AuditLog?>> GetByFilterAsync(AuditLogFilterCriteria parameters);
 
 }

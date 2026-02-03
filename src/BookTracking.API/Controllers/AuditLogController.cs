@@ -24,8 +24,8 @@ public class AuditLogController : ControllerBase
     {
         try
         {
-            var filterDto = _mapper.Map<FilterAuditLogRequestDto>(request);
-            var logs = await _auditLogService.FilterAuditLogsAsync(filterDto);
+            var filterDto = _mapper.Map<AuditLogFilterCriteriaDto>(request);
+            var logs = await _auditLogService.GetFilteredAuditLogsAsync(filterDto);
             var response = _mapper.Map<IEnumerable<AuditLogResponse>>(logs);
             
             return Ok(ApiResponse<IEnumerable<AuditLogResponse>>.Success(response, 200, "Audit logs retrieved successfully"));

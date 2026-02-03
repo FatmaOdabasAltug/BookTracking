@@ -3,7 +3,7 @@ using BookTracking.Domain.Enums;
 
 namespace BookTracking.Application.Dtos;
 
-public class FilterAuditLogRequestDto
+public class AuditLogFilterCriteriaDto
 {
     // Filter parameters
     public Guid? EntityId { get; set; }
