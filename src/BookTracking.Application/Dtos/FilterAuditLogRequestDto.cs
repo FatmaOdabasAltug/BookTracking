@@ -1,4 +1,4 @@
-using BookTracking.Application.Constants;
+using BookTracking.Domain.Constants;
 using BookTracking.Domain.Enums;
 
 namespace BookTracking.Application.Dtos;
@@ -20,5 +20,5 @@ public class FilterAuditLogRequestDto
     // Pagination and sorting
     public int PageNumber { get; set; } = PageConstants.DefaultPageNumber;
     public int PageSize { get; set; } = PageConstants.DefaultPageSize;
-    public string OrderBy { get; set; } = SortOrder.Descending;
+    public SortOrder OrderBy { get; set; } = SortOrder.DESC;
 }

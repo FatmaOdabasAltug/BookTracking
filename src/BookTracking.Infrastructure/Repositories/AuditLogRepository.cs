@@ -1,5 +1,6 @@
 using BookTracking.Domain.Dtos;
 using BookTracking.Domain.Entities;
+using BookTracking.Domain.Enums;
 using BookTracking.Domain.Interfaces;
 using BookTracking.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -54,8 +55,8 @@ public class AuditLogRepository : IAuditLogRepository
         if (parameters.EndDate.HasValue)
             query = query.Where(x => x.CreatedAt <= parameters.EndDate.Value);
 
-        // Default to Descending (Newest first) unless "ASC" is explicitly requested
-        query = parameters.OrderBy?.ToUpper() == "ASC" 
+        // Default to Descending (Newest first) unless ASC is explicitly requested
+        query = parameters.OrderBy == SortOrder.ASC 
             ? query.OrderBy(x => x.CreatedAt) 
             : query.OrderByDescending(x => x.CreatedAt);
 

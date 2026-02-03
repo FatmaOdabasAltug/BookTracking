@@ -58,18 +58,18 @@ public class AuditLogRepositoryTests
         await context.SaveChangesAsync();
 
 
-        var result1 = await repo.FilterAsync(new AuditLogFilterParameters { EntityType = EntityType.Book, PageNumber=1, PageSize=10, OrderBy="ASC" });
+        var result1 = await repo.FilterAsync(new AuditLogFilterParameters { EntityType = EntityType.Book, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
         result1.Should().HaveCount(2);
 
 
-        var result2 = await repo.FilterAsync(new AuditLogFilterParameters { Action = AuditType.Update, PageNumber=1, PageSize=10, OrderBy="ASC" });
+        var result2 = await repo.FilterAsync(new AuditLogFilterParameters { Action = AuditType.Update, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
         result2.Should().HaveCount(1);
         result2.First()!.Id.Should().Be(log2.Id);
 
-        var result3 = await repo.FilterAsync(new AuditLogFilterParameters { PropertyName = "Title", PageNumber=1, PageSize=10, OrderBy="ASC" });
+        var result3 = await repo.FilterAsync(new AuditLogFilterParameters { PropertyName = "Title", PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
         result3.Should().HaveCount(1);
 
-        var result4 = await repo.FilterAsync(new AuditLogFilterParameters { StartDate = DateTime.UtcNow.AddHours(-1), EndDate = DateTime.UtcNow.AddHours(1), PageNumber=1, PageSize=10, OrderBy="ASC" });
+        var result4 = await repo.FilterAsync(new AuditLogFilterParameters { StartDate = DateTime.UtcNow.AddHours(-1), EndDate = DateTime.UtcNow.AddHours(1), PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
         result4.Should().HaveCount(1);
     }
 
@@ -86,7 +86,7 @@ public class AuditLogRepositoryTests
         }
         await context.SaveChangesAsync();
 
-        var result = await repo.FilterAsync(new AuditLogFilterParameters { PageNumber = 2, PageSize = 2, OrderBy="ASC" });
+        var result = await repo.FilterAsync(new AuditLogFilterParameters { PageNumber = 2, PageSize = 2, OrderBy=SortOrder.ASC });
         result.Should().HaveCount(2);
     }
 
@@ -107,7 +107,7 @@ public class AuditLogRepositoryTests
         await context.AuditLogs.AddRangeAsync(log1, log2, log3);
         await context.SaveChangesAsync();
 
-        var result = await repo.FilterAsync(new AuditLogFilterParameters { EntityType = EntityType.Book, Action = AuditType.Create, PageNumber=1, PageSize=10, OrderBy="ASC" });
+        var result = await repo.FilterAsync(new AuditLogFilterParameters { EntityType = EntityType.Book, Action = AuditType.Create, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
         
         result.Should().HaveCount(1);
         result.First()!.Id.Should().Be(log1.Id);

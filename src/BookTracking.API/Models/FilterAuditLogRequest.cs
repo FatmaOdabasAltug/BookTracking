@@ -1,5 +1,5 @@
-using BookTracking.Application.Constants;
 using BookTracking.Domain.Enums;
+using BookTracking.Domain.Constants;
 
 namespace BookTracking.API.Models;
 
@@ -16,5 +16,5 @@ public class FilterAuditLogRequest
     
     public int PageNumber { get; set; } = PageConstants.DefaultPageNumber;
     public int PageSize { get; set; } = PageConstants.DefaultPageSize;
-    public string OrderBy { get; set; } = SortOrder.Descending;
+    public SortOrder OrderBy { get; set; } = SortOrder.DESC;
 }
