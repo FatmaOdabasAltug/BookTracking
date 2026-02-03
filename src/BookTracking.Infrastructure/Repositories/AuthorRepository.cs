@@ -29,8 +29,8 @@ public class AuthorRepository : GenericRepository<Author>, IAuthorRepository
     public override async Task<IEnumerable<Author>> GetAllAsync()
     {
         return await _context.Authors
+            .IgnoreQueryFilters()
             .Include(a => a.Books)
-            .Where(x => x.IsActive)
             .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
             .ToListAsync();
     }
