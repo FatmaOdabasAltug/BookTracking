@@ -27,6 +27,9 @@ public class AuditLogRepository : IAuditLogRepository
         if (parameters.EntityType.HasValue)
             query = query.Where(x => x.EntityType == parameters.EntityType.Value);
 
+        if (parameters.EntityId.HasValue)
+            query = query.Where(x => x.EntityId == parameters.EntityId.Value);
+
         if (parameters.Action.HasValue)
             query = query.Where(x => x.Action == parameters.Action.Value);
 

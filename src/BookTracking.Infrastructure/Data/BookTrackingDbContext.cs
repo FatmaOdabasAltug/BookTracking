@@ -94,6 +94,11 @@ public class BookTrackingDbContext : DbContext
                 .HasDefaultValue(true);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.EntityId);
+            entity.HasIndex(e => new { e.EntityType, e.CreatedAt });
+            entity.HasIndex(e => new { e.Action, e.CreatedAt });
         });
         modelBuilder.Entity<Book>().HasQueryFilter(b => b.IsActive);
         modelBuilder.Entity<Author>().HasQueryFilter(a => a.IsActive);
