@@ -24,7 +24,7 @@ public class GenericRepositoryTests
         using var context = new BookTrackingDbContext(options);
         var repo = new GenericRepository<Book>(context);
         var book = new Book { Id = Guid.NewGuid(), Title = "Test Book", IsActive = true, 
-            Isbn = "1234567890", PublishDate = DateTime.UtcNow, Authors = new List<Author> { new Author { Id = Guid.NewGuid(), Name = "Author 1" } } };
+            Isbn = "1234567890", PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), Authors = new List<Author> { new Author { Id = Guid.NewGuid(), Name = "Author 1" } } };
         await repo.AddAsync(book);
         await context.SaveChangesAsync();
 
@@ -43,7 +43,7 @@ public class GenericRepositoryTests
         var options = GetOptions();
         using var context = new BookTrackingDbContext(options);
         var repo = new GenericRepository<Book>(context);
-        var nonExistentBook = new Book { Id = Guid.NewGuid(), Title = "Non-existent Book" ,Description="N/A", Isbn="N/A", PublishDate=DateTime.UtcNow, Authors=new List<Author>()};
+        var nonExistentBook = new Book { Id = Guid.NewGuid(), Title = "Non-existent Book" ,Description="N/A", Isbn="N/A", PublishDate=DateOnly.FromDateTime(DateTime.UtcNow), Authors=new List<Author>()};
 
         var act = async () => 
         {
@@ -62,7 +62,7 @@ public class GenericRepositoryTests
         using var context = new BookTrackingDbContext(options);
         var repo = new GenericRepository<Book>(context);
         var book = new Book { Id = Guid.NewGuid(), Title = "Test Book 2", IsActive = true, 
-            Isbn = "1234569990", PublishDate = DateTime.UtcNow, Authors = new List<Author> { new Author { Id = Guid.NewGuid(), Name = "Author 2" } } };
+            Isbn = "1234569990", PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), Authors = new List<Author> { new Author { Id = Guid.NewGuid(), Name = "Author 2" } } };
 
         await repo.AddAsync(book);
         await context.SaveChangesAsync();

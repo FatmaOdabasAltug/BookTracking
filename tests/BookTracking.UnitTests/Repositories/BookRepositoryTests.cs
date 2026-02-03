@@ -23,7 +23,7 @@ public class BookRepositoryTests
         var options = GetOptions();
         using var context = new BookTrackingDbContext(options);
         var repo = new BookRepository(context);
-        var book = new Book { Id = Guid.NewGuid(), Title = "Test Book", Isbn = "1234567890", IsActive=true, PublishDate = DateTime.UtcNow, Authors = new List<Author>() };
+        var book = new Book { Id = Guid.NewGuid(), Title = "Test Book", Isbn = "1234567890", IsActive=true, PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), Authors = new List<Author>() };
         
         await repo.AddAsync(book);
         await context.SaveChangesAsync();
@@ -55,7 +55,7 @@ public class BookRepositoryTests
             Title = "Test Book", 
             Isbn = "1234567890", 
             IsActive = true,
-            PublishDate = DateTime.UtcNow, 
+            PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), 
             Authors = new List<Author> { author } 
         };
 

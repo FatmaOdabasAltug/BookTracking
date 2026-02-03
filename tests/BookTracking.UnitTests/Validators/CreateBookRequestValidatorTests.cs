@@ -23,7 +23,7 @@ public class CreateBookRequestValidatorTests
             Isbn = "1234567890123",
             Title = "Valid Book",
             Description = "A valid description",
-            PublishDate = DateTime.Today.AddYears(-1),
+            PublishDate = DateOnly.FromDateTime(DateTime.Today.AddYears(-1)),
             Authors = new List<Guid> { Guid.NewGuid() }
         };
 
@@ -42,7 +42,7 @@ public class CreateBookRequestValidatorTests
         {
             Isbn = "22", // The problematic case reported by user
             Title = "Invalid Book",
-            PublishDate = DateTime.Today,
+            PublishDate = DateOnly.FromDateTime(DateTime.Today),
             Authors = new List<Guid> { Guid.NewGuid() }
         };
 
@@ -62,7 +62,7 @@ public class CreateBookRequestValidatorTests
         {
             Isbn = "123456789012a", 
             Title = "Invalid Book",
-            PublishDate = DateTime.Today,
+            PublishDate = DateOnly.FromDateTime(DateTime.Today),
             Authors = new List<Guid> { Guid.NewGuid() }
         };
 
@@ -81,7 +81,7 @@ public class CreateBookRequestValidatorTests
         {
             Isbn = "", 
             Title = "Invalid Book",
-            PublishDate = DateTime.Today,
+            PublishDate = DateOnly.FromDateTime(DateTime.Today),
             Authors = new List<Guid> { Guid.NewGuid() }
         };
 

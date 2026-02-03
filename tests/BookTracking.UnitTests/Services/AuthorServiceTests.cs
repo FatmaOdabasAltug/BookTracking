@@ -114,7 +114,7 @@ public class AuthorServiceTests
     public async Task DeleteAuthorAsync_ShouldThrow_WhenAuthorHasBooks()
     {
         var authorId = Guid.NewGuid();
-        var author = new Author { Id = authorId, Name = "Author", Books = new List<Book> { new Book { Isbn="1", Title="T", PublishDate=DateTime.UtcNow, Authors=new List<Author>(), IsActive=true } } };
+        var author = new Author { Id = authorId, Name = "Author", Books = new List<Book> { new Book { Isbn="1", Title="T", PublishDate=DateOnly.FromDateTime(DateTime.UtcNow), Authors=new List<Author>(), IsActive=true } } };
 
         _mockAuthorRepository.Setup(r => r.GetByIdWithBooksAsync(authorId)).ReturnsAsync(author);
 

@@ -43,7 +43,7 @@ public class BookServiceTests
         // Arrange
         var bookDto = new BookDto { Isbn = "123", Title = "Test Title", Authors = new List<Guid> { Guid.NewGuid() } };
         var authorEntity = new Author { Id = bookDto.Authors.First(), Name = "Author Name" };
-        var bookEntity = new Book { Id = Guid.NewGuid(), Isbn = "123", Title = "Test Title", PublishDate = DateTime.UtcNow, Authors = new List<Author> { authorEntity }, IsActive=true };
+        var bookEntity = new Book { Id = Guid.NewGuid(), Isbn = "123", Title = "Test Title", PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), Authors = new List<Author> { authorEntity }, IsActive=true };
 
         _mockBookRepository.Setup(r => r.AnyByIsbnAsync(bookDto.Isbn)).ReturnsAsync(false);
         _mockAuthorRepository.Setup(r => r.GetAuthorListAsync(bookDto.Authors)).ReturnsAsync(new List<Author> { authorEntity });
@@ -96,8 +96,8 @@ public class BookServiceTests
     public async Task UpdateBookAsync_ShouldUpdateTitle_WhenTitleChanged()
     {
         // Arrange
-        var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "New Title", Authors = new List<Guid>(), Isbn = "111", PublishDate = DateTime.UtcNow };
-        var existingBook = new Book { Id = bookDto.Id, Title = "Old Title", Isbn = "111", Description = "Desc", PublishDate = DateTime.MinValue, Authors = new List<Author>(), IsActive=true };
+        var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "New Title", Authors = new List<Guid>(), Isbn = "111", PublishDate = DateOnly.FromDateTime(DateTime.UtcNow) };
+        var existingBook = new Book { Id = bookDto.Id, Title = "Old Title", Isbn = "111", Description = "Desc", PublishDate = DateOnly.MinValue, Authors = new List<Author>(), IsActive=true };
         
         _mockBookRepository.Setup(r => r.GetByIdWithAuthorsAsync(bookDto.Id)).ReturnsAsync(existingBook);
         _mockAuthorRepository.Setup(r => r.GetAuthorListAsync(bookDto.Authors)).ReturnsAsync(new List<Author>());
@@ -129,8 +129,8 @@ public class BookServiceTests
     [Fact]
     public async Task UpdateBookAsync_ShouldUpdateDescription_WhenDescriptionChanged()
     {
-        var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "Title", Description = "New Desc", Authors = new List<Guid>(), Isbn="1", PublishDate=DateTime.UtcNow };
-        var existingBook = new Book { Id = bookDto.Id, Title = "Title", Description = "Old Desc", PublishDate = DateTime.UtcNow, Authors = new List<Author>(), Isbn="1", IsActive=true };
+        var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "Title", Description = "New Desc", Authors = new List<Guid>(), Isbn="1", PublishDate=DateOnly.FromDateTime(DateTime.UtcNow) };
+        var existingBook = new Book { Id = bookDto.Id, Title = "Title", Description = "Old Desc", PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), Authors = new List<Author>(), Isbn="1", IsActive=true };
         
         _mockBookRepository.Setup(r => r.GetByIdWithAuthorsAsync(bookDto.Id)).ReturnsAsync(existingBook);
         _mockAuthorRepository.Setup(r => r.GetAuthorListAsync(bookDto.Authors)).ReturnsAsync(new List<Author>());
@@ -147,8 +147,8 @@ public class BookServiceTests
     [Fact]
     public async Task UpdateBookAsync_ShouldUpdatePublishDate_WhenDateChanged()
     {
-        var oldDate = DateTime.UtcNow.AddDays(-10);
-        var newDate = DateTime.UtcNow;
+        var oldDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-10));
+        var newDate = DateOnly.FromDateTime(DateTime.UtcNow);
         var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "Title", PublishDate = newDate, Authors = new List<Guid>(), Isbn="1", Description="D" };
         var existingBook = new Book { Id = bookDto.Id, Title = "Title", PublishDate = oldDate, Authors = new List<Author>(), Isbn="1", Description="D", IsActive=true };
         
@@ -170,8 +170,8 @@ public class BookServiceTests
         var oldAuthor = new Author { Id = Guid.NewGuid(), Name = "Old Author" };
         var newAuthor = new Author { Id = Guid.NewGuid(), Name = "New Author" };
         
-        var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "Title", Authors = new List<Guid> { newAuthor.Id }, Isbn="1", PublishDate=DateTime.UtcNow, Description="D" };
-        var existingBook = new Book { Id = bookDto.Id, Title = "Title", Authors = new List<Author> { oldAuthor }, Isbn="1", PublishDate=DateTime.UtcNow, Description="D", IsActive=true };
+        var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "Title", Authors = new List<Guid> { newAuthor.Id }, Isbn="1", PublishDate=DateOnly.FromDateTime(DateTime.UtcNow), Description="D" };
+        var existingBook = new Book { Id = bookDto.Id, Title = "Title", Authors = new List<Author> { oldAuthor }, Isbn="1", PublishDate=DateOnly.FromDateTime(DateTime.UtcNow), Description="D", IsActive=true };
         
         _mockBookRepository.Setup(r => r.GetByIdWithAuthorsAsync(bookDto.Id)).ReturnsAsync(existingBook);
         _mockAuthorRepository.Setup(r => r.GetAuthorListAsync(bookDto.Authors)).ReturnsAsync(new List<Author> { newAuthor });
@@ -191,7 +191,7 @@ public class BookServiceTests
     [Fact]
     public async Task UpdateBookAsync_ShouldNotCommit_WhenNoChanges()
     {
-        var now = DateTime.UtcNow;
+        var now = DateOnly.FromDateTime(DateTime.UtcNow);
         var bookDto = new BookDto { Id = Guid.NewGuid(), Title = "Title", Authors = new List<Guid>(), Isbn="1", PublishDate=now, Description="D" };
         var existingBook = new Book { Id = bookDto.Id, Title = "Title", Authors = new List<Author>(), Isbn="1", PublishDate=now, Description="D", IsActive=true };
         
@@ -222,7 +222,7 @@ public class BookServiceTests
     public async Task DeleteBookAsync_ShouldDelete_WhenBookExists()
     {
         var bookId = Guid.NewGuid();
-        var book = new Book { Id = bookId, Title = "Title", Isbn = "111", PublishDate = DateTime.UtcNow, Authors = new List<Author>(), IsActive=true };
+        var book = new Book { Id = bookId, Title = "Title", Isbn = "111", PublishDate = DateOnly.FromDateTime(DateTime.UtcNow), Authors = new List<Author>(), IsActive=true };
 
         _mockBookRepository.Setup(r => r.GetByIdAsync(bookId)).ReturnsAsync(book);
         _mockBookRepository.Setup(r => r.DeleteAsync(book)).ReturnsAsync(book);

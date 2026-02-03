@@ -49,7 +49,7 @@ public class AuthorRepositoryTests
         using var context = new BookTrackingDbContext(options);
         var repo = new AuthorRepository(context);
         
-        var book = new Book { Id = Guid.NewGuid(), Title = "Book 1", Isbn="111", PublishDate=DateTime.UtcNow, IsActive=true, Authors = new List<Author>() };
+        var book = new Book { Id = Guid.NewGuid(), Title = "Book 1", Isbn="111", PublishDate=DateOnly.FromDateTime(DateTime.UtcNow), IsActive=true, Authors = new List<Author>() };
         var author = new Author { 
             Id = Guid.NewGuid(), 
             Name = "Author 1", 
