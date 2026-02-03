@@ -1,54 +1,33 @@
 # BookTracking API
 
-This is a .NET 8 Web API project for tracking books and authors.
-
-## Prerequisites
-
-- **Docker Desktop**: Required to run the PostgreSQL database.
-- **.NET 8 SDK**: Required to build and run the application.
+## Project Overview
+This project is a .NET 8 Web API designed to manage **Books** and **Authors**. It also includes an **Audit Logging** system to record data creation and update events.
 
 ## How to Run
 
-Follow these simple steps to get the project running locally and test it with Swagger.
+### Prerequisites
+- Docker Desktop
+- .NET 8 SDK
 
-### 1. Clone the Repository
+### Quick Start
+1. **Start Database**:
+   ```bash
+   docker-compose up -d
+   ```
 
-```bash
-git clone <repository-url>
-cd BookTracking
-```
+2. **Run Application**:
+   ```bash
+   cd src/BookTracking.API
+   dotnet run
+   ```
+   *The database will be automatically created and seeded with sample data.*
 
-### 2. Start the Database
+3. **Open Swagger**:
+   [http://localhost:5063/swagger](http://localhost:5063/swagger)
 
-Run the following command in the root directory (where `docker-compose.yml` is located) to start the PostgreSQL database container:
+## Key APIs
+You can test the following endpoints via Swagger:
 
-```bash
-docker-compose up -d
-```
-
-### 3. Run the API
-
-Navigate to the API project directory and run the application:
-
-```bash
-cd src/BookTracking.API
-dotnet run
-```
-
-The application will automatically apply any pending database migrations and seed initial data (Books and Authors) when it starts.
-
-### 4. Open Swagger UI
-
-Once the application is running, open your browser and navigate to the following URL to access the Swagger UI and test the endpoints:
-
-[http://localhost:5063/swagger](http://localhost:5063/swagger)
-
-*(Or https://localhost:7092/swagger if you prefer HTTPS)*
-
-## Seeded Data
-
-When the application starts for the first time, it automatically seeds the database with the following initial data:
-
-- **Authors**: J.K. Rowling, J.R.R. Tolkien, George Orwell
-- **Books**: Harry Potter, The Hobbit, The Lord of the Rings, 1984
-- **Audit Logs**: Creation logs for all the above authors and books
+- **Books** (`/api/Book`): Manage complete book inventory (List, Create, Update, Delete).
+- **Authors** (`/api/Author`): Manage author records (List, Create, Update, Delete).
+- **Audit Logs** (`/api/AuditLog`): Filter and view the history of all data changes.
