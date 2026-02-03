@@ -78,7 +78,7 @@ public class AuthorServiceTests
 
         Func<Task> act = async () => await _authorService.UpdateAuthorAsync(authorDto);
 
-        await act.Should().ThrowAsync<ArgumentException>().WithMessage("Author not found");
+        await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage($"Author id {authorDto.Id} not found.");
     }
 
     [Fact]

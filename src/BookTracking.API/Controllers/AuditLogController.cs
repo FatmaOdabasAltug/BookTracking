@@ -2,6 +2,7 @@ using AutoMapper;
 using BookTracking.API.Models;
 using BookTracking.Application.Dtos;
 using BookTracking.Application.Interfaces;
+using BookTracking.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookTracking.API.Controllers;
@@ -20,19 +21,18 @@ public class AuditLogController : ControllerBase
     }
 
     [HttpGet("filter")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<AuditLogResponse>>>> Filter([FromQuery] FilterAuditLogRequest request)
+    public async Task<ActionResult<ApiResponse<IEnumerable<GroupedAuditLogResponse>>>> Filter([FromQuery] FilterAuditLogRequest request)
     {
         try
         {
             var filterDto = _mapper.Map<AuditLogFilterCriteriaDto>(request);
-            var logs = await _auditLogService.GetFilteredAuditLogsAsync(filterDto);
-            var response = _mapper.Map<IEnumerable<AuditLogResponse>>(logs);
-            
-            return Ok(ApiResponse<IEnumerable<AuditLogResponse>>.Success(response, 200, "Audit logs retrieved successfully"));
+            var groupedLogs = await _auditLogService.GetFilteredAuditLogsGroupedAsync(filterDto);
+            var groupedResponse = _mapper.Map<IEnumerable<GroupedAuditLogResponse>>(groupedLogs);
+            return Ok(ApiResponse<IEnumerable<GroupedAuditLogResponse>>.Success(groupedResponse, 200, "Grouped audit logs retrieved successfully"));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ApiResponse<IEnumerable<AuditLogResponse>>.Failure("An unexpected error occurred while retrieving audit logs.", 500));
+            return StatusCode(500, ApiResponse<object>.Failure("An unexpected error occurred while retrieving audit logs.", 500));
         }
     }
 }

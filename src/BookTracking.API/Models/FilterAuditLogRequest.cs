@@ -17,4 +17,6 @@ public class FilterAuditLogRequest
     public int PageNumber { get; set; } = PageConstants.DefaultPageNumber;
     public int PageSize { get; set; } = PageConstants.DefaultPageSize;
     public SortOrder OrderBy { get; set; } = SortOrder.DESC;
+    
+    public GroupByOption GroupBy { get; set; } = GroupByOption.None;
 }

@@ -3,6 +3,7 @@ using BookTracking.Application.Dtos;
 using BookTracking.Application.Interfaces;
 using BookTracking.Domain.Dtos;
 using BookTracking.Domain.Entities;
+using BookTracking.Domain.Enums;
 using BookTracking.Domain.Interfaces;
 
 namespace BookTracking.Application.Services;
@@ -32,10 +33,39 @@ public class AuditLogService : IAuditLogService
             });
     }
 
-    public async Task<IEnumerable<AuditLogDto?>> GetFilteredAuditLogsAsync(AuditLogFilterCriteriaDto parameters)
+    public async Task<IEnumerable<GroupedAuditLogDto>> GetFilteredAuditLogsGroupedAsync(AuditLogFilterCriteriaDto parameters)
     {
         var filterParameters = _mapper.Map<AuditLogFilterCriteria>(parameters);
-        var auditLogs = await _auditLogRepository.GetByFilterAsync(filterParameters);
-        return _mapper.Map<IEnumerable<AuditLogDto?>>(auditLogs);
+        var groupedLogs = await _auditLogRepository.GetByFilterGroupedAsync(filterParameters);
+
+        var result = new List<GroupedAuditLogDto>();
+
+        foreach (var group in groupedLogs)
+        {
+            var groupedDto = new GroupedAuditLogDto
+            {
+                GroupKey = group.Key,
+                GroupName = GenerateGroupName(group.Key, group.Value.FirstOrDefault(), parameters.GroupBy),
+                TotalCount = group.Value.Count,
+                Logs = _mapper.Map<List<AuditLogDto>>(group.Value)
+            };
+            result.Add(groupedDto);
+        }
+
+        return result;
+    }
+
+    private string GenerateGroupName(string groupKey, AuditLog? firstLog, GroupByOption groupBy)
+    {
+        if (firstLog == null) return groupKey;
+
+        return groupBy switch
+        {
+            GroupByOption.EntityId => $"{firstLog.EntityType}: {groupKey}",
+            GroupByOption.EntityType => $"All {groupKey}s",
+            GroupByOption.Date => DateTime.Parse(groupKey).ToString("MMMM d, yyyy"),
+            GroupByOption.Action => $"{groupKey} Operations",
+            _ => "All Logs"
+        };
     }
 }

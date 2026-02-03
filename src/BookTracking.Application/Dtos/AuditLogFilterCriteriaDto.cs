@@ -21,4 +21,7 @@ public class AuditLogFilterCriteriaDto
     public int PageNumber { get; set; } = PageConstants.DefaultPageNumber;
     public int PageSize { get; set; } = PageConstants.DefaultPageSize;
     public SortOrder OrderBy { get; set; } = SortOrder.DESC;
+    
+    // Grouping
+    public GroupByOption GroupBy { get; set; } = GroupByOption.None;
 }

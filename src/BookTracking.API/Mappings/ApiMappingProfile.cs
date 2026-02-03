@@ -22,5 +22,6 @@ public class ApiMappingProfile : Profile
 
         CreateMap<FilterAuditLogRequest, AuditLogFilterCriteriaDto>();
         CreateMap<AuditLogDto, AuditLogResponse>();
+        CreateMap<GroupedAuditLogDto, GroupedAuditLogResponse>();
     }
 }

@@ -58,19 +58,19 @@ public class AuditLogRepositoryTests
         await context.SaveChangesAsync();
 
 
-        var result1 = await repo.GetByFilterAsync(new AuditLogFilterCriteria { EntityType = EntityType.Book, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
-        result1.Should().HaveCount(2);
+        var result1 = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { EntityType = EntityType.Book, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC, GroupBy=GroupByOption.None });
+        result1["All"].Should().HaveCount(2);
 
 
-        var result2 = await repo.GetByFilterAsync(new AuditLogFilterCriteria { Action = AuditType.Update, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
-        result2.Should().HaveCount(1);
-        result2.First()!.Id.Should().Be(log2.Id);
+        var result2 = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { Action = AuditType.Update, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC, GroupBy=GroupByOption.None });
+        result2["All"].Should().HaveCount(1);
+        result2["All"].First()!.Id.Should().Be(log2.Id);
 
-        var result3 = await repo.GetByFilterAsync(new AuditLogFilterCriteria { PropertyName = "Title", PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
-        result3.Should().HaveCount(1);
+        var result3 = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { PropertyName = "Title", PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC, GroupBy=GroupByOption.None });
+        result3["All"].Should().HaveCount(1);
 
-        var result4 = await repo.GetByFilterAsync(new AuditLogFilterCriteria { StartDate = DateTime.UtcNow.AddHours(-1), EndDate = DateTime.UtcNow.AddHours(1), PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
-        result4.Should().HaveCount(1);
+        var result4 = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { StartDate = DateTime.UtcNow.AddHours(-1), EndDate = DateTime.UtcNow.AddHours(1), PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC, GroupBy=GroupByOption.None });
+        result4["All"].Should().HaveCount(1);
     }
 
     [Fact]
@@ -80,14 +80,16 @@ public class AuditLogRepositoryTests
         using var context = new BookTrackingDbContext(options);
         var repo = new AuditLogRepository(context);
 
+        // Create 5 logs with different EntityIds so we have 5 groups
         for(int i=0; i<5; i++)
         {
              await context.AuditLogs.AddAsync(new AuditLog { Id = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create, EntityId=Guid.NewGuid(), CreatedAt = DateTime.UtcNow.AddMinutes(i), Description=$"Log {i}" });
         }
         await context.SaveChangesAsync();
 
-        var result = await repo.GetByFilterAsync(new AuditLogFilterCriteria { PageNumber = 2, PageSize = 2, OrderBy=SortOrder.ASC });
-        result.Should().HaveCount(2);
+        // Group by EntityId, page 2 with page size 2 should return 2 groups
+        var result = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { PageNumber = 2, PageSize = 2, OrderBy=SortOrder.ASC, GroupBy=GroupByOption.EntityId });
+        result.Should().HaveCount(2); // 2 groups on page 2
     }
 
     [Fact]
@@ -107,10 +109,10 @@ public class AuditLogRepositoryTests
         await context.AuditLogs.AddRangeAsync(log1, log2, log3);
         await context.SaveChangesAsync();
 
-        var result = await repo.GetByFilterAsync(new AuditLogFilterCriteria { EntityType = EntityType.Book, Action = AuditType.Create, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC });
+        var result = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { EntityType = EntityType.Book, Action = AuditType.Create, PageNumber=1, PageSize=10, OrderBy=SortOrder.ASC, GroupBy=GroupByOption.None });
         
-        result.Should().HaveCount(1);
-        result.First()!.Id.Should().Be(log1.Id);
+        result["All"].Should().HaveCount(1);
+        result["All"].First()!.Id.Should().Be(log1.Id);
     }
     [Fact]
     public async Task FilterAsync_ShouldSortByNewestByDefault()
@@ -127,10 +129,10 @@ public class AuditLogRepositoryTests
         await context.SaveChangesAsync();
 
         // Use default parameters (OrderBy should be "DESC")
-        var result = await repo.GetByFilterAsync(new AuditLogFilterCriteria { PageNumber=1, PageSize=10 });
+        var result = await repo.GetByFilterGroupedAsync(new AuditLogFilterCriteria { PageNumber=1, PageSize=10, GroupBy=GroupByOption.None });
         
-        result.Should().HaveCount(3);
-        var list = result.ToList();
+        result["All"].Should().HaveCount(3);
+        var list = result["All"].ToList();
         list[0]!.Id.Should().Be(log2.Id); // Newest
         list[2]!.Id.Should().Be(log1.Id);  // Oldest
         list[1]!.Id.Should().Be(log3.Id);      // Middle

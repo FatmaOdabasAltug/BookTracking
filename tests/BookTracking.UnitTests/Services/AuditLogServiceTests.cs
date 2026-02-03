@@ -50,21 +50,30 @@ public class AuditLogServiceTests
     }
 
     [Fact]
-    public async Task FilterAuditLogsAsync_ShouldReturnLogs()
+    public async Task FilterAuditLogsAsync_ShouldReturnGroupedLogs()
     {
-        var request = new AuditLogFilterCriteriaDto { PageNumber = 1, PageSize = 10 };
-        var filterParams = new AuditLogFilterCriteria { PageNumber = 1, PageSize = 10 };
-        var logs = new List<AuditLog> { new AuditLog { Description = "Log 1" } };
+        var request = new AuditLogFilterCriteriaDto { PageNumber = 1, PageSize = 10, GroupBy = GroupByOption.None };
+        var filterParams = new AuditLogFilterCriteria { PageNumber = 1, PageSize = 10, GroupBy = GroupByOption.None };
+        var logs = new Dictionary<string, List<AuditLog>> 
+        { 
+            { "All", new List<AuditLog> { new AuditLog { Description = "Log 1", EntityId = Guid.NewGuid(), EntityType = EntityType.Book, Action = AuditType.Create } } }
+        };
         var logDtos = new List<AuditLogDto> { new AuditLogDto { Description = "Log 1" } };
+        var groupedDtos = new List<GroupedAuditLogDto> 
+        { 
+            new GroupedAuditLogDto { GroupKey = "All", GroupName = "All Logs", TotalCount = 1, Logs = logDtos }
+        };
 
         _mockMapper.Setup(m => m.Map<AuditLogFilterCriteria>(request)).Returns(filterParams);
-        _mockAuditLogRepository.Setup(r => r.GetByFilterAsync(filterParams)).ReturnsAsync(logs);
-        _mockMapper.Setup(m => m.Map<IEnumerable<AuditLogDto?>>(logs)).Returns(logDtos);
+        _mockAuditLogRepository.Setup(r => r.GetByFilterGroupedAsync(filterParams)).ReturnsAsync(logs);
+        _mockMapper.Setup(m => m.Map<List<AuditLogDto>>(It.IsAny<List<AuditLog>>())).Returns(logDtos);
 
-        var result = await _auditLogService.GetFilteredAuditLogsAsync(request);
+        var result = await _auditLogService.GetFilteredAuditLogsGroupedAsync(request);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
-        result.First()!.Description.Should().Be("Log 1");
+        var firstGroup = result.First();
+        firstGroup.GroupKey.Should().Be("All");
+        firstGroup.TotalCount.Should().Be(1);
     }
 }

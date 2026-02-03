@@ -21,7 +21,7 @@ public class AuditLogRepository : IAuditLogRepository
         await _context.AuditLogs.AddAsync(auditLog);
     }
 
-    public async Task<IEnumerable<AuditLog?>> GetByFilterAsync(AuditLogFilterCriteria parameters)
+    public async Task<Dictionary<string, List<AuditLog>>> GetByFilterGroupedAsync(AuditLogFilterCriteria parameters)
     {
         var query = _context.AuditLogs.AsQueryable();
 
@@ -39,16 +39,19 @@ public class AuditLogRepository : IAuditLogRepository
             var propertyName = parameters.PropertyName.Trim().ToLower();
             query = query.Where(x => x.PropertyName.ToLower().Contains(propertyName));       
         }
+        
         if (!string.IsNullOrWhiteSpace(parameters.OldValue))
         {
             var oldValue = parameters.OldValue.Trim().ToLower();
             query = query.Where(x => x.OldValue != null && x.OldValue.ToLower().Contains(oldValue));
         }
+        
         if (!string.IsNullOrWhiteSpace(parameters.NewValue))
         {
             var newValue = parameters.NewValue.Trim().ToLower();
             query = query.Where(x => x.NewValue != null && x.NewValue.ToLower().Contains(newValue));
         }
+        
         if (parameters.StartDate.HasValue)
             query = query.Where(x => x.CreatedAt >= parameters.StartDate.Value);
 
@@ -60,9 +63,37 @@ public class AuditLogRepository : IAuditLogRepository
             ? query.OrderBy(x => x.CreatedAt) 
             : query.OrderByDescending(x => x.CreatedAt);
 
-        return await query
+        // Fetch all filtered and ordered data
+        var allLogs = await query.ToListAsync();
+
+        // Group based on GroupBy parameter
+        var grouped = parameters.GroupBy switch
+        {
+            GroupByOption.EntityId => allLogs
+                .GroupBy(x => x.EntityId.ToString())
+                .ToDictionary(g => g.Key, g => g.ToList()),
+                
+            GroupByOption.EntityType => allLogs
+                .GroupBy(x => x.EntityType.ToString())
+                .ToDictionary(g => g.Key, g => g.ToList()),
+                
+            GroupByOption.Action => allLogs
+                .GroupBy(x => x.Action.ToString())
+                .ToDictionary(g => g.Key, g => g.ToList()),
+                
+            GroupByOption.Date => allLogs
+                .GroupBy(x => x.CreatedAt.Date.ToString("yyyy-MM-dd"))
+                .ToDictionary(g => g.Key, g => g.ToList()),
+                
+            _ => new Dictionary<string, List<AuditLog>> 
+                { { "All", allLogs } }
+        };
+
+        var paginatedGroups = grouped
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)
             .Take(parameters.PageSize)
-            .ToListAsync();
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        return paginatedGroups;
     }
 }
